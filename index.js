@@ -5,7 +5,7 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]); // Cloudflare + Google DNS
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 8000
 
 const uri = `mongodb+srv://CrudServerUser:GwH2aasNBWQFeBeZ@cluster0.theaye1.mongodb.net/?appName=Cluster0`;
@@ -34,6 +34,18 @@ const run = async () => {
             const cursor = userCollection.find()
             const allValues = await cursor.toArray(); // allValues/result
             res.send(allValues)
+        })
+
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id
+            // console.log(id)
+
+            const query = {
+                _id: new ObjectId(id)
+            }
+
+            const user = await userCollection.findOne(query)
+            res.send(user)
         })
 
         await client.db("admin").command({ ping: 1 })
