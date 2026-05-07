@@ -30,12 +30,14 @@ const run = async () => {
         const database = client.db("crud-user-db"); // database/db
         const userCollection = database.collection("users"); // users/userCollection
 
+        // get data from database & data send
         app.get('/users', async (req, res) => {
             const cursor = userCollection.find()
             const allValues = await cursor.toArray(); // allValues/result
             res.send(allValues)
         })
 
+        // get data from database & data send by id
         app.get('/users/:id', async (req, res) => {
             const id = req.params.id
             // console.log(id)
@@ -48,6 +50,16 @@ const run = async () => {
             res.send(user)
         })
 
+        // add new data into database
+        app.post('/users', async (req, res) => {
+            const doc = req.body
+            console.log("user to be inserted", doc)
+
+            const result = await userCollection.insertOne(doc);
+            res.send(result)
+        })
+
+        // delete particular data from database & update
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id
 
