@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 // dns server for mongodb connection
 const dns = require("node:dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]); // Cloudflare + Google DNS
@@ -8,7 +10,7 @@ const cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 8000
 
-const uri = `mongodb+srv://CrudServerUser:GwH2aasNBWQFeBeZ@cluster0.theaye1.mongodb.net/?appName=Cluster0`;
+const uri = process.env.MONGO_DB_URI;
 
 app.use(cors())
 app.use(express.json())
@@ -53,9 +55,33 @@ const run = async () => {
         // add new data into database
         app.post('/users', async (req, res) => {
             const doc = req.body
-            console.log("user to be inserted", doc)
+            // console.log("user to be inserted", doc)
 
             const result = await userCollection.insertOne(doc);
+            res.send(result)
+        })
+
+        // update/edit data
+        app.patch('/users/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {
+                _id: new ObjectId(id)
+            }
+
+            const { name, email, role } = req.body
+            console.log(req.body)
+
+            const updateDoc = {
+                $set: {
+                    name,
+                    email,
+                    role
+                }
+            }
+
+            console.log(updateDoc)
+
+            const result = await userCollection.updateOne(filter, updateDoc)
             res.send(result)
         })
 
